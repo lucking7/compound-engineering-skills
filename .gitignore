@@ -1,0 +1,5 @@
+.DS_Store
+node_modules/
+# transient upstream clones / build scratch
+.deplugin/upstream/
+*.tmp

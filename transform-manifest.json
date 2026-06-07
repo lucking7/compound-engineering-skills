@@ -1,0 +1,630 @@
+{
+  "generatedFrom": "/Users/luck/.claude/plugins/cache/compound-engineering-plugin/compound-engineering/3.11.2",
+  "skills": {
+    "ce-agent-native-architecture": {
+      "sourceHash": "2e9a240aef7f",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "ce-agent-native-audit": {
+      "sourceHash": "ef65b1b99a0b",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "ce-brainstorm": {
+      "sourceHash": "5d7f32a8a6d3",
+      "closure": [
+        "ce-slack-researcher"
+      ],
+      "personas": {
+        "ce-slack-researcher": {
+          "readOnly": false,
+          "model": "sonnet",
+          "tools": "(inherits all)"
+        }
+      },
+      "readOnlyCount": 0,
+      "writeCount": 1
+    },
+    "ce-clean-gone-branches": {
+      "sourceHash": "c6493ad134fa",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "ce-code-review": {
+      "sourceHash": "f8d7174d7e41",
+      "closure": [
+        "ce-deployment-verification-agent",
+        "ce-julik-frontend-races-reviewer",
+        "ce-previous-comments-reviewer",
+        "ce-project-standards-reviewer",
+        "ce-maintainability-reviewer",
+        "ce-data-migration-reviewer",
+        "ce-agent-native-reviewer",
+        "ce-api-contract-reviewer",
+        "ce-adversarial-reviewer",
+        "ce-correctness-reviewer",
+        "ce-learnings-researcher",
+        "ce-performance-reviewer",
+        "ce-reliability-reviewer",
+        "ce-swift-ios-reviewer",
+        "ce-security-reviewer",
+        "ce-testing-reviewer"
+      ],
+      "personas": {
+        "ce-deployment-verification-agent": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-julik-frontend-races-reviewer": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, Write"
+        },
+        "ce-previous-comments-reviewer": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, Write"
+        },
+        "ce-project-standards-reviewer": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, Write"
+        },
+        "ce-maintainability-reviewer": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, Write"
+        },
+        "ce-data-migration-reviewer": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, Write"
+        },
+        "ce-agent-native-reviewer": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-api-contract-reviewer": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, Write"
+        },
+        "ce-adversarial-reviewer": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, Write"
+        },
+        "ce-correctness-reviewer": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, Write"
+        },
+        "ce-learnings-researcher": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-performance-reviewer": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, Write"
+        },
+        "ce-reliability-reviewer": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, Write"
+        },
+        "ce-swift-ios-reviewer": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, Write"
+        },
+        "ce-security-reviewer": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, Write"
+        },
+        "ce-testing-reviewer": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, Write"
+        }
+      },
+      "readOnlyCount": 3,
+      "writeCount": 13
+    },
+    "ce-commit": {
+      "sourceHash": "aa50f78fc0aa",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "ce-commit-push-pr": {
+      "sourceHash": "10d08b3ce9ba",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "ce-compound": {
+      "sourceHash": "d720564e8c62",
+      "closure": [
+        "ce-pattern-recognition-specialist",
+        "ce-best-practices-researcher",
+        "ce-framework-docs-researcher",
+        "ce-code-simplicity-reviewer",
+        "ce-data-integrity-guardian",
+        "ce-performance-oracle",
+        "ce-security-sentinel",
+        "ce-session-historian"
+      ],
+      "personas": {
+        "ce-pattern-recognition-specialist": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-best-practices-researcher": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, WebFetch, WebSearch, mcp__context7__*"
+        },
+        "ce-framework-docs-researcher": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, WebFetch, WebSearch, mcp__context7__*"
+        },
+        "ce-code-simplicity-reviewer": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-data-integrity-guardian": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-performance-oracle": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-security-sentinel": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-session-historian": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "(inherits all)"
+        }
+      },
+      "readOnlyCount": 7,
+      "writeCount": 1
+    },
+    "ce-compound-refresh": {
+      "sourceHash": "abf3a680b74c",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "ce-debug": {
+      "sourceHash": "8b7d25a4a3b5",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "ce-demo-reel": {
+      "sourceHash": "8d63cb6e8c3d",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "ce-dhh-rails-style": {
+      "sourceHash": "3c11e2cedeee",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "ce-doc-review": {
+      "sourceHash": "33608cc0999e",
+      "closure": [
+        "ce-adversarial-document-reviewer",
+        "ce-scope-guardian-reviewer",
+        "ce-security-lens-reviewer",
+        "ce-product-lens-reviewer",
+        "ce-design-lens-reviewer",
+        "ce-feasibility-reviewer",
+        "ce-coherence-reviewer"
+      ],
+      "personas": {
+        "ce-adversarial-document-reviewer": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-scope-guardian-reviewer": {
+          "readOnly": true,
+          "model": "sonnet",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-security-lens-reviewer": {
+          "readOnly": true,
+          "model": "sonnet",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-product-lens-reviewer": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-design-lens-reviewer": {
+          "readOnly": true,
+          "model": "sonnet",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-feasibility-reviewer": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-coherence-reviewer": {
+          "readOnly": true,
+          "model": "haiku",
+          "tools": "Read, Grep, Glob"
+        }
+      },
+      "readOnlyCount": 7,
+      "writeCount": 0
+    },
+    "ce-dogfood-beta": {
+      "sourceHash": "fa20ef81e35f",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "ce-frontend-design": {
+      "sourceHash": "200d06d72bd6",
+      "closure": [
+        "ce-design-iterator"
+      ],
+      "personas": {
+        "ce-design-iterator": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "(inherits all)"
+        }
+      },
+      "readOnlyCount": 0,
+      "writeCount": 1
+    },
+    "ce-gemini-imagegen": {
+      "sourceHash": "1425baa5aa9a",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "ce-ideate": {
+      "sourceHash": "c2405569af83",
+      "closure": [
+        "ce-issue-intelligence-analyst",
+        "ce-learnings-researcher",
+        "ce-slack-researcher",
+        "ce-web-researcher"
+      ],
+      "personas": {
+        "ce-issue-intelligence-analyst": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, mcp__github__*"
+        },
+        "ce-learnings-researcher": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-slack-researcher": {
+          "readOnly": false,
+          "model": "sonnet",
+          "tools": "(inherits all)"
+        },
+        "ce-web-researcher": {
+          "readOnly": false,
+          "model": "sonnet",
+          "tools": "(inherits all)"
+        }
+      },
+      "readOnlyCount": 2,
+      "writeCount": 2
+    },
+    "ce-optimize": {
+      "sourceHash": "45c36e48fe4b",
+      "closure": [
+        "ce-repo-research-analyst",
+        "ce-learnings-researcher"
+      ],
+      "personas": {
+        "ce-repo-research-analyst": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-learnings-researcher": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        }
+      },
+      "readOnlyCount": 2,
+      "writeCount": 0
+    },
+    "ce-plan": {
+      "sourceHash": "6ae4857cb8c1",
+      "closure": [
+        "ce-pattern-recognition-specialist",
+        "ce-deployment-verification-agent",
+        "ce-best-practices-researcher",
+        "ce-framework-docs-researcher",
+        "ce-architecture-strategist",
+        "ce-data-integrity-guardian",
+        "ce-data-migration-reviewer",
+        "ce-repo-research-analyst",
+        "ce-git-history-analyzer",
+        "ce-learnings-researcher",
+        "ce-performance-oracle",
+        "ce-spec-flow-analyzer",
+        "ce-security-sentinel",
+        "ce-slack-researcher",
+        "ce-web-researcher"
+      ],
+      "personas": {
+        "ce-pattern-recognition-specialist": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-deployment-verification-agent": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-best-practices-researcher": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, WebFetch, WebSearch, mcp__context7__*"
+        },
+        "ce-framework-docs-researcher": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, WebFetch, WebSearch, mcp__context7__*"
+        },
+        "ce-architecture-strategist": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-data-integrity-guardian": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-data-migration-reviewer": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, Write"
+        },
+        "ce-repo-research-analyst": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-git-history-analyzer": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-learnings-researcher": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-performance-oracle": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-spec-flow-analyzer": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-security-sentinel": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash"
+        },
+        "ce-slack-researcher": {
+          "readOnly": false,
+          "model": "sonnet",
+          "tools": "(inherits all)"
+        },
+        "ce-web-researcher": {
+          "readOnly": false,
+          "model": "sonnet",
+          "tools": "(inherits all)"
+        }
+      },
+      "readOnlyCount": 12,
+      "writeCount": 3
+    },
+    "ce-polish": {
+      "sourceHash": "5b368d7df956",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "ce-product-pulse": {
+      "sourceHash": "09f669f26b95",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "ce-promote": {
+      "sourceHash": "1cf72c027061",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "ce-proof": {
+      "sourceHash": "0cd059970879",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "ce-resolve-pr-feedback": {
+      "sourceHash": "c07a29acec66",
+      "closure": [
+        "ce-pr-comment-resolver"
+      ],
+      "personas": {
+        "ce-pr-comment-resolver": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "(inherits all)"
+        }
+      },
+      "readOnlyCount": 0,
+      "writeCount": 1
+    },
+    "ce-riffrec-feedback-analysis": {
+      "sourceHash": "daa03d137c1d",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "ce-sessions": {
+      "sourceHash": "313abdd1c73b",
+      "closure": [
+        "ce-session-historian"
+      ],
+      "personas": {
+        "ce-session-historian": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "(inherits all)"
+        }
+      },
+      "readOnlyCount": 0,
+      "writeCount": 1
+    },
+    "ce-simplify-code": {
+      "sourceHash": "2e04d0efc4d2",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "ce-slack-research": {
+      "sourceHash": "84eebae89a99",
+      "closure": [
+        "ce-slack-researcher"
+      ],
+      "personas": {
+        "ce-slack-researcher": {
+          "readOnly": false,
+          "model": "sonnet",
+          "tools": "(inherits all)"
+        }
+      },
+      "readOnlyCount": 0,
+      "writeCount": 1
+    },
+    "ce-strategy": {
+      "sourceHash": "dea63e7b159c",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "ce-test-browser": {
+      "sourceHash": "8a3e867354a7",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "ce-test-xcode": {
+      "sourceHash": "b5ac317dab7f",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "ce-work": {
+      "sourceHash": "16177450b773",
+      "closure": [
+        "ce-figma-design-sync"
+      ],
+      "personas": {
+        "ce-figma-design-sync": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "(inherits all)"
+        }
+      },
+      "readOnlyCount": 0,
+      "writeCount": 1
+    },
+    "ce-work-beta": {
+      "sourceHash": "6ec1c016e263",
+      "closure": [
+        "ce-figma-design-sync"
+      ],
+      "personas": {
+        "ce-figma-design-sync": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "(inherits all)"
+        }
+      },
+      "readOnlyCount": 0,
+      "writeCount": 1
+    },
+    "ce-worktree": {
+      "sourceHash": "986e398ee389",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    },
+    "lfg": {
+      "sourceHash": "0b72342c3610",
+      "closure": [],
+      "personas": {},
+      "readOnlyCount": 0,
+      "writeCount": 0
+    }
+  }
+}

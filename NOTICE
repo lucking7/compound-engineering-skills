@@ -1,0 +1,37 @@
+compound-engineering-skills
+============================
+
+This repository is a MECHANICAL, AUTOMATED derivative of:
+
+    EveryInc/compound-engineering-plugin
+    Copyright (c) 2025 Kieran Klaassen (Every)
+    Licensed under the MIT License (see LICENSE).
+
+It is NOT affiliated with or endorsed by Every / Kieran Klaassen.
+
+What was changed and why
+------------------------
+The upstream project is a Claude Code *plugin* whose skills dispatch a shared,
+plugin-root `agents/` directory of registered sub-agents. This repository runs a
+deterministic transform (`.deplugin/ce-transform.mjs`) that converts those skills
+into SELF-CONTAINED skills with NO `agents/` directory:
+
+  * each skill's agent dependency-closure is embedded as persona files under
+    `skills/<skill>/references/personas/`;
+  * a standard "self-contained persona dispatch" convention block is injected at
+    the top of each SKILL.md so the skill resolves its personas without any
+    registered sub-agent;
+  * 4 upstream skills that only manage the plugin itself
+    (ce-setup, ce-update, ce-release-notes, ce-report-bug) are omitted.
+
+No skill prose authored upstream is rewritten — only the persona files and the
+convention block are added. All original copyright and the MIT license are
+retained per the license terms.
+
+Known limitation
+----------------
+Because there is no `agents/` directory, personas run as generic sub-agents and
+their original `tools:` / `model:` frontmatter is NOT enforced by the runtime;
+each persona file restates its constraints in prose on a best-effort basis.
+
+Provenance (upstream version) is recorded in `transform-manifest.json`.

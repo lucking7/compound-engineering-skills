@@ -1,0 +1,77 @@
+name: sync-upstream
+
+# Follow the latest upstream `compound-engineering-v*` release. Deterministic risk-tiered auto-merge:
+#   content-only edits  -> commit straight to main
+#   structural change   -> open a PR for human review (never auto-merged)
+# Pure regeneration (no patch/merge), no LLM, no extra secrets — uses the built-in GITHUB_TOKEN only.
+on:
+  schedule:
+    - cron: '17 7 * * 1'        # Mondays 07:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Regenerate skills/ + manifest from the latest upstream release, then classify the change.
+      # ce-transform exits non-zero on any structural gate failure -> this step fails -> nothing is committed.
+      - name: Regenerate from upstream + classify
+        id: sync
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash .deplugin/ce-sync.sh
+
+      # Belt-and-suspenders: re-validate the freshly regenerated tree.
+      - name: Validate regenerated tree
+        run: node .deplugin/ce-validate.mjs
+
+      - name: No changes
+        if: steps.sync.outputs.decision == 'nochange'
+        run: echo "Up to date with upstream — nothing to do."
+
+      # CONTENT-ONLY change -> auto-merge to main.
+      - name: Auto-merge content-only update to main
+        if: steps.sync.outputs.decision == 'automerge'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add skills transform-manifest.json
+          git commit -m "chore(sync): content-only update from upstream — ${{ steps.sync.outputs.summary }}"
+          git push
+
+      # STRUCTURAL change -> open / update a PR for human review (never auto-merged).
+      - name: Open PR for structural change
+        if: steps.sync.outputs.decision == 'pr'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: sync/upstream
+          base: main
+          commit-message: "chore(sync): structural upstream change — ${{ steps.sync.outputs.summary }}"
+          title: "sync: structural upstream change (review required)"
+          body: |
+            Automated upstream sync flagged a **structural** change (skill add/remove or agent closure change),
+            which is held for human review — it is NOT auto-merged.
+
+            **What changed:** ${{ steps.sync.outputs.summary }}
+
+            Review the diff under `skills/` and `transform-manifest.json`. The deterministic structural gate
+            (`.deplugin/ce-validate.mjs`) has already passed; this review is to catch *semantic* drift the gate
+            cannot see (e.g. a renamed/split persona, a new dispatch idiom the convention block doesn't cover).
+          labels: upstream-sync
+          delete-branch: true
