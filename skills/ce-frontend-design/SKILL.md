@@ -7,7 +7,7 @@ description: 'Build web interfaces with genuine design quality, not AI slop. Use
 
 This skill is self-contained: its specialist personas live under `references/personas/` and it depends on **no** registered subagent and **no** `agents/` directory.
 
-Whenever the steps below name a `ce-*` specialist — e.g. "dispatch `ce-correctness-reviewer`", "run `ce-learnings-researcher`", a persona-catalog entry, or `Task ce-foo(args)`:
+Whenever the steps below name a `ce-*` specialist — e.g. `Task ce-<specialist>(args)`, "dispatch `ce-<specialist>`", or a persona-catalog entry:
 1. Read `references/personas/<name>.md`.
 2. Launch a subagent via the Task/Agent tool, passing that file's **entire contents as the subagent's instructions**, then append the specific args/context the step gives.
 3. `subagent_type`: use **`Explore`** if the persona's "Operating constraints" line says read-only; otherwise **`general-purpose`**.

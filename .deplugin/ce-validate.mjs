@@ -28,6 +28,7 @@ const eqSet = (a, b) => a.length === b.length && [...a].sort().every((x, i) => x
 
 const errors = [];
 const manifest = JSON.parse(await fs.readFile(MANIFEST, 'utf8'));
+const agentNames = manifest.agentNames || [];   // full upstream agent universe (for dangling-ref detection)
 
 // 1) no agents/ directory anywhere under skills/
 for (const n of await walk(SKILLS)) {
@@ -69,6 +70,19 @@ for (const [skill, m] of Object.entries(manifest.skills)) {
   for (const n of personaFiles) {
     const body = await fs.readFile(path.join(personasDir, `${n}.md`), 'utf8');
     if (!body.includes('Operating constraints')) errors.push(`${skill}: persona ${n} missing Operating-constraints header`);
+  }
+
+  // no DANGLING agent reference: any real upstream agent name appearing in the skill's
+  // (non-persona) text must have a persona. Catches hand-tampering or a transform-closure miss.
+  if (agentNames.length) {
+    const nonPersona = (await walk(skillDir))
+      .filter(x => x.file && !x.file.includes(`${path.sep}personas${path.sep}`)).map(x => x.file);
+    const text = (await Promise.all(nonPersona.map(f => fs.readFile(f, 'utf8').catch(() => '')))).join('\n');
+    for (const a of agentNames) {
+      if (!closure.includes(a) && new RegExp(`\\b${a}\\b`).test(text)) {
+        errors.push(`${skill}: dangling agent reference '${a}' (named in skill text but no persona)`);
+      }
+    }
   }
 }
 
