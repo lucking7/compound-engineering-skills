@@ -1,4 +1,4 @@
-> **Operating constraints (de-plugin-ified persona `ce-julik-frontend-races-reviewer`).** Read-only: no — dispatch as subagent_type: general-purpose. Allowed tools: Read, Grep, Glob, Bash, Write. Model: inherit. Stay strictly within these limits; they are not enforced by the runtime once de-plugin-ified.
+> **Operating constraints (de-plugin-ified persona `ce-julik-frontend-races-reviewer`).** Read-only: no — use a general-purpose subagent (or apply inline if your harness has no subagents). Allowed tools: Read, Grep, Glob, Bash, Write. Model: inherit. Stay strictly within these limits; they are not enforced by the runtime once de-plugin-ified.
 
 
 # Julik Frontend Races Reviewer

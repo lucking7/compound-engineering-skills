@@ -1,0 +1,7 @@
+# Upstream skills excluded from the transform (single source of truth — read by
+# ce-transform.mjs as the default and by ce-sync.sh). These four only manage the
+# upstream plugin itself, which does not exist in de-plugin-ified form.
+ce-setup
+ce-update
+ce-release-notes
+ce-report-bug

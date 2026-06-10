@@ -1,5 +1,9 @@
 {
-  "generatedFrom": "/Users/luck/.claude/plugins/cache/compound-engineering-plugin/compound-engineering/3.11.2",
+  "upstream": {
+    "repo": "EveryInc/compound-engineering-plugin",
+    "tag": "compound-engineering-v3.11.2",
+    "commit": "966e32f5b5efec4830b347fff420482e05c90d4e"
+  },
   "agentNames": [
     "ce-adversarial-document-reviewer",
     "ce-adversarial-reviewer",
@@ -47,21 +51,24 @@
   ],
   "skills": {
     "ce-agent-native-architecture": {
-      "sourceHash": "2e9a240aef7f",
+      "sourceHash": "9e44721184f3",
+      "outputHash": "9e44721184f3",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "ce-agent-native-audit": {
-      "sourceHash": "ef65b1b99a0b",
+      "sourceHash": "abf9dc4bebb7",
+      "outputHash": "abf9dc4bebb7",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "ce-brainstorm": {
-      "sourceHash": "5d7f32a8a6d3",
+      "sourceHash": "b7c66b87617a",
+      "outputHash": "677017603a6f",
       "closure": [
         "ce-slack-researcher"
       ],
@@ -69,283 +76,327 @@
         "ce-slack-researcher": {
           "readOnly": false,
           "model": "sonnet",
-          "tools": "(inherits all)"
+          "tools": "(inherits all)",
+          "hash": "c0c514e8ef50"
         }
       },
       "readOnlyCount": 0,
       "writeCount": 1
     },
     "ce-clean-gone-branches": {
-      "sourceHash": "c6493ad134fa",
+      "sourceHash": "30f9a1edda3f",
+      "outputHash": "30f9a1edda3f",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "ce-code-review": {
-      "sourceHash": "f8d7174d7e41",
+      "sourceHash": "d8e092896da3",
+      "outputHash": "80e56bfa8385",
       "closure": [
-        "ce-deployment-verification-agent",
-        "ce-julik-frontend-races-reviewer",
-        "ce-previous-comments-reviewer",
-        "ce-project-standards-reviewer",
-        "ce-maintainability-reviewer",
-        "ce-data-migration-reviewer",
+        "ce-adversarial-reviewer",
         "ce-agent-native-reviewer",
         "ce-api-contract-reviewer",
-        "ce-adversarial-reviewer",
         "ce-correctness-reviewer",
+        "ce-data-migration-reviewer",
+        "ce-deployment-verification-agent",
+        "ce-julik-frontend-races-reviewer",
         "ce-learnings-researcher",
+        "ce-maintainability-reviewer",
         "ce-performance-reviewer",
+        "ce-previous-comments-reviewer",
+        "ce-project-standards-reviewer",
         "ce-reliability-reviewer",
-        "ce-swift-ios-reviewer",
         "ce-security-reviewer",
+        "ce-swift-ios-reviewer",
         "ce-testing-reviewer"
       ],
       "personas": {
-        "ce-deployment-verification-agent": {
-          "readOnly": true,
-          "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
-        },
-        "ce-julik-frontend-races-reviewer": {
+        "ce-adversarial-reviewer": {
           "readOnly": false,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash, Write"
-        },
-        "ce-previous-comments-reviewer": {
-          "readOnly": false,
-          "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash, Write"
-        },
-        "ce-project-standards-reviewer": {
-          "readOnly": false,
-          "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash, Write"
-        },
-        "ce-maintainability-reviewer": {
-          "readOnly": false,
-          "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash, Write"
-        },
-        "ce-data-migration-reviewer": {
-          "readOnly": false,
-          "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash, Write"
+          "tools": "Read, Grep, Glob, Bash, Write",
+          "hash": "81fee92fab9b"
         },
         "ce-agent-native-reviewer": {
           "readOnly": true,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "2ed5c0b955f0"
         },
         "ce-api-contract-reviewer": {
           "readOnly": false,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash, Write"
-        },
-        "ce-adversarial-reviewer": {
-          "readOnly": false,
-          "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash, Write"
+          "tools": "Read, Grep, Glob, Bash, Write",
+          "hash": "e919dbee00f4"
         },
         "ce-correctness-reviewer": {
           "readOnly": false,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash, Write"
+          "tools": "Read, Grep, Glob, Bash, Write",
+          "hash": "be2ab0f353e0"
+        },
+        "ce-data-migration-reviewer": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, Write",
+          "hash": "78ad9fb7f4da"
+        },
+        "ce-deployment-verification-agent": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "198d03ae61bc"
+        },
+        "ce-julik-frontend-races-reviewer": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, Write",
+          "hash": "59dbecea6ebb"
         },
         "ce-learnings-researcher": {
           "readOnly": true,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "5c4d7e30f7a2"
+        },
+        "ce-maintainability-reviewer": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, Write",
+          "hash": "a2c7a13e6357"
         },
         "ce-performance-reviewer": {
           "readOnly": false,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash, Write"
+          "tools": "Read, Grep, Glob, Bash, Write",
+          "hash": "881604aa45d7"
+        },
+        "ce-previous-comments-reviewer": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, Write",
+          "hash": "6d13ebc7f251"
+        },
+        "ce-project-standards-reviewer": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, Write",
+          "hash": "64675f906221"
         },
         "ce-reliability-reviewer": {
           "readOnly": false,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash, Write"
-        },
-        "ce-swift-ios-reviewer": {
-          "readOnly": false,
-          "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash, Write"
+          "tools": "Read, Grep, Glob, Bash, Write",
+          "hash": "a39686af701c"
         },
         "ce-security-reviewer": {
           "readOnly": false,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash, Write"
+          "tools": "Read, Grep, Glob, Bash, Write",
+          "hash": "2b49b44d018c"
+        },
+        "ce-swift-ios-reviewer": {
+          "readOnly": false,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, Write",
+          "hash": "9ef6230b738c"
         },
         "ce-testing-reviewer": {
           "readOnly": false,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash, Write"
+          "tools": "Read, Grep, Glob, Bash, Write",
+          "hash": "76eb4d895893"
         }
       },
       "readOnlyCount": 3,
       "writeCount": 13
     },
     "ce-commit": {
-      "sourceHash": "aa50f78fc0aa",
+      "sourceHash": "c7d89ebe8690",
+      "outputHash": "c7d89ebe8690",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "ce-commit-push-pr": {
-      "sourceHash": "10d08b3ce9ba",
+      "sourceHash": "cfa773abefde",
+      "outputHash": "cfa773abefde",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "ce-compound": {
-      "sourceHash": "d720564e8c62",
+      "sourceHash": "baabbe7e23e7",
+      "outputHash": "48398fe4ed66",
       "closure": [
-        "ce-pattern-recognition-specialist",
         "ce-best-practices-researcher",
-        "ce-framework-docs-researcher",
         "ce-code-simplicity-reviewer",
         "ce-data-integrity-guardian",
+        "ce-framework-docs-researcher",
+        "ce-pattern-recognition-specialist",
         "ce-performance-oracle",
         "ce-security-sentinel",
         "ce-session-historian"
       ],
       "personas": {
-        "ce-pattern-recognition-specialist": {
-          "readOnly": true,
-          "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
-        },
         "ce-best-practices-researcher": {
           "readOnly": true,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash, WebFetch, WebSearch, mcp__context7__*"
-        },
-        "ce-framework-docs-researcher": {
-          "readOnly": true,
-          "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash, WebFetch, WebSearch, mcp__context7__*"
+          "tools": "Read, Grep, Glob, Bash, WebFetch, WebSearch, mcp__context7__*",
+          "hash": "07564beb1eeb"
         },
         "ce-code-simplicity-reviewer": {
           "readOnly": true,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "4d09b3fcdf10"
         },
         "ce-data-integrity-guardian": {
           "readOnly": true,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "a8389ace026e"
+        },
+        "ce-framework-docs-researcher": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, WebFetch, WebSearch, mcp__context7__*",
+          "hash": "0224b3c4ae11"
+        },
+        "ce-pattern-recognition-specialist": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "d0d678515c0b"
         },
         "ce-performance-oracle": {
           "readOnly": true,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "c73d5c4b275d"
         },
         "ce-security-sentinel": {
           "readOnly": true,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "143436f5443a"
         },
         "ce-session-historian": {
           "readOnly": false,
           "model": "inherit",
-          "tools": "(inherits all)"
+          "tools": "(inherits all)",
+          "hash": "b088f2f1acd7"
         }
       },
       "readOnlyCount": 7,
       "writeCount": 1
     },
     "ce-compound-refresh": {
-      "sourceHash": "abf3a680b74c",
+      "sourceHash": "484d9fd8426c",
+      "outputHash": "484d9fd8426c",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "ce-debug": {
-      "sourceHash": "8b7d25a4a3b5",
+      "sourceHash": "556e88f6ab03",
+      "outputHash": "556e88f6ab03",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "ce-demo-reel": {
-      "sourceHash": "8d63cb6e8c3d",
+      "sourceHash": "a9f48ab16b80",
+      "outputHash": "a9f48ab16b80",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "ce-dhh-rails-style": {
-      "sourceHash": "3c11e2cedeee",
+      "sourceHash": "4b477d907418",
+      "outputHash": "4b477d907418",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "ce-doc-review": {
-      "sourceHash": "33608cc0999e",
+      "sourceHash": "36c248819c30",
+      "outputHash": "d06a4cf30c27",
       "closure": [
         "ce-adversarial-document-reviewer",
-        "ce-scope-guardian-reviewer",
-        "ce-security-lens-reviewer",
-        "ce-product-lens-reviewer",
+        "ce-coherence-reviewer",
         "ce-design-lens-reviewer",
         "ce-feasibility-reviewer",
-        "ce-coherence-reviewer"
+        "ce-product-lens-reviewer",
+        "ce-scope-guardian-reviewer",
+        "ce-security-lens-reviewer"
       ],
       "personas": {
         "ce-adversarial-document-reviewer": {
           "readOnly": true,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
-        },
-        "ce-scope-guardian-reviewer": {
-          "readOnly": true,
-          "model": "sonnet",
-          "tools": "Read, Grep, Glob, Bash"
-        },
-        "ce-security-lens-reviewer": {
-          "readOnly": true,
-          "model": "sonnet",
-          "tools": "Read, Grep, Glob, Bash"
-        },
-        "ce-product-lens-reviewer": {
-          "readOnly": true,
-          "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
-        },
-        "ce-design-lens-reviewer": {
-          "readOnly": true,
-          "model": "sonnet",
-          "tools": "Read, Grep, Glob, Bash"
-        },
-        "ce-feasibility-reviewer": {
-          "readOnly": true,
-          "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "98fc3f76e3e0"
         },
         "ce-coherence-reviewer": {
           "readOnly": true,
           "model": "haiku",
-          "tools": "Read, Grep, Glob"
+          "tools": "Read, Grep, Glob",
+          "hash": "9b7f460efede"
+        },
+        "ce-design-lens-reviewer": {
+          "readOnly": true,
+          "model": "sonnet",
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "a395af89d3b3"
+        },
+        "ce-feasibility-reviewer": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "8d7c6a62d1f2"
+        },
+        "ce-product-lens-reviewer": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "dfda86635bac"
+        },
+        "ce-scope-guardian-reviewer": {
+          "readOnly": true,
+          "model": "sonnet",
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "cf2544109b63"
+        },
+        "ce-security-lens-reviewer": {
+          "readOnly": true,
+          "model": "sonnet",
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "278bb130585c"
         }
       },
       "readOnlyCount": 7,
       "writeCount": 0
     },
     "ce-dogfood-beta": {
-      "sourceHash": "fa20ef81e35f",
+      "sourceHash": "d1c6e9f987d7",
+      "outputHash": "d1c6e9f987d7",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "ce-frontend-design": {
-      "sourceHash": "200d06d72bd6",
+      "sourceHash": "0508351a5aef",
+      "outputHash": "3ffc6d288db0",
       "closure": [
         "ce-design-iterator"
       ],
@@ -353,21 +404,24 @@
         "ce-design-iterator": {
           "readOnly": false,
           "model": "inherit",
-          "tools": "(inherits all)"
+          "tools": "(inherits all)",
+          "hash": "91c614eaab49"
         }
       },
       "readOnlyCount": 0,
       "writeCount": 1
     },
     "ce-gemini-imagegen": {
-      "sourceHash": "1425baa5aa9a",
+      "sourceHash": "f63a3639c4a0",
+      "outputHash": "f63a3639c4a0",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "ce-ideate": {
-      "sourceHash": "c2405569af83",
+      "sourceHash": "5f89293d2d29",
+      "outputHash": "bebf6270a1a4",
       "closure": [
         "ce-issue-intelligence-analyst",
         "ce-learnings-researcher",
@@ -378,177 +432,205 @@
         "ce-issue-intelligence-analyst": {
           "readOnly": true,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash, mcp__github__*"
+          "tools": "Read, Grep, Glob, Bash, mcp__github__*",
+          "hash": "6e80be9b2ad7"
         },
         "ce-learnings-researcher": {
           "readOnly": true,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "5c4d7e30f7a2"
         },
         "ce-slack-researcher": {
           "readOnly": false,
           "model": "sonnet",
-          "tools": "(inherits all)"
+          "tools": "(inherits all)",
+          "hash": "c0c514e8ef50"
         },
         "ce-web-researcher": {
           "readOnly": false,
           "model": "sonnet",
-          "tools": "(inherits all)"
+          "tools": "(inherits all)",
+          "hash": "d355bb3bbe32"
         }
       },
       "readOnlyCount": 2,
       "writeCount": 2
     },
     "ce-optimize": {
-      "sourceHash": "45c36e48fe4b",
+      "sourceHash": "983f92df8df2",
+      "outputHash": "83a18651c75d",
       "closure": [
-        "ce-repo-research-analyst",
-        "ce-learnings-researcher"
+        "ce-learnings-researcher",
+        "ce-repo-research-analyst"
       ],
       "personas": {
-        "ce-repo-research-analyst": {
-          "readOnly": true,
-          "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
-        },
         "ce-learnings-researcher": {
           "readOnly": true,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "5c4d7e30f7a2"
+        },
+        "ce-repo-research-analyst": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "bed910c8ffe7"
         }
       },
       "readOnlyCount": 2,
       "writeCount": 0
     },
     "ce-plan": {
-      "sourceHash": "6ae4857cb8c1",
+      "sourceHash": "1245a20aade9",
+      "outputHash": "58252b449b87",
       "closure": [
-        "ce-pattern-recognition-specialist",
-        "ce-deployment-verification-agent",
-        "ce-best-practices-researcher",
-        "ce-framework-docs-researcher",
         "ce-architecture-strategist",
+        "ce-best-practices-researcher",
         "ce-data-integrity-guardian",
         "ce-data-migration-reviewer",
-        "ce-repo-research-analyst",
+        "ce-deployment-verification-agent",
+        "ce-framework-docs-researcher",
         "ce-git-history-analyzer",
         "ce-learnings-researcher",
+        "ce-pattern-recognition-specialist",
         "ce-performance-oracle",
-        "ce-spec-flow-analyzer",
+        "ce-repo-research-analyst",
         "ce-security-sentinel",
         "ce-slack-researcher",
+        "ce-spec-flow-analyzer",
         "ce-web-researcher"
       ],
       "personas": {
-        "ce-pattern-recognition-specialist": {
+        "ce-architecture-strategist": {
           "readOnly": true,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
-        },
-        "ce-deployment-verification-agent": {
-          "readOnly": true,
-          "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "24a44e167ee7"
         },
         "ce-best-practices-researcher": {
           "readOnly": true,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash, WebFetch, WebSearch, mcp__context7__*"
-        },
-        "ce-framework-docs-researcher": {
-          "readOnly": true,
-          "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash, WebFetch, WebSearch, mcp__context7__*"
-        },
-        "ce-architecture-strategist": {
-          "readOnly": true,
-          "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
+          "tools": "Read, Grep, Glob, Bash, WebFetch, WebSearch, mcp__context7__*",
+          "hash": "07564beb1eeb"
         },
         "ce-data-integrity-guardian": {
           "readOnly": true,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "a8389ace026e"
         },
         "ce-data-migration-reviewer": {
           "readOnly": false,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash, Write"
+          "tools": "Read, Grep, Glob, Bash, Write",
+          "hash": "78ad9fb7f4da"
         },
-        "ce-repo-research-analyst": {
+        "ce-deployment-verification-agent": {
           "readOnly": true,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "198d03ae61bc"
+        },
+        "ce-framework-docs-researcher": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash, WebFetch, WebSearch, mcp__context7__*",
+          "hash": "0224b3c4ae11"
         },
         "ce-git-history-analyzer": {
           "readOnly": true,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "6bc36e928b94"
         },
         "ce-learnings-researcher": {
           "readOnly": true,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "5c4d7e30f7a2"
+        },
+        "ce-pattern-recognition-specialist": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "d0d678515c0b"
         },
         "ce-performance-oracle": {
           "readOnly": true,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "c73d5c4b275d"
         },
-        "ce-spec-flow-analyzer": {
+        "ce-repo-research-analyst": {
           "readOnly": true,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "bed910c8ffe7"
         },
         "ce-security-sentinel": {
           "readOnly": true,
           "model": "inherit",
-          "tools": "Read, Grep, Glob, Bash"
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "143436f5443a"
         },
         "ce-slack-researcher": {
           "readOnly": false,
           "model": "sonnet",
-          "tools": "(inherits all)"
+          "tools": "(inherits all)",
+          "hash": "c0c514e8ef50"
+        },
+        "ce-spec-flow-analyzer": {
+          "readOnly": true,
+          "model": "inherit",
+          "tools": "Read, Grep, Glob, Bash",
+          "hash": "739a942b8ce0"
         },
         "ce-web-researcher": {
           "readOnly": false,
           "model": "sonnet",
-          "tools": "(inherits all)"
+          "tools": "(inherits all)",
+          "hash": "d355bb3bbe32"
         }
       },
       "readOnlyCount": 12,
       "writeCount": 3
     },
     "ce-polish": {
-      "sourceHash": "5b368d7df956",
+      "sourceHash": "c7c8cd3f1ca0",
+      "outputHash": "c7c8cd3f1ca0",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "ce-product-pulse": {
-      "sourceHash": "09f669f26b95",
+      "sourceHash": "60aeccfa0592",
+      "outputHash": "60aeccfa0592",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "ce-promote": {
-      "sourceHash": "1cf72c027061",
+      "sourceHash": "1fd83df2958d",
+      "outputHash": "1fd83df2958d",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "ce-proof": {
-      "sourceHash": "0cd059970879",
+      "sourceHash": "461afc939f6b",
+      "outputHash": "461afc939f6b",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "ce-resolve-pr-feedback": {
-      "sourceHash": "c07a29acec66",
+      "sourceHash": "dabfbfebed7d",
+      "outputHash": "e9f4336c279d",
       "closure": [
         "ce-pr-comment-resolver"
       ],
@@ -556,21 +638,24 @@
         "ce-pr-comment-resolver": {
           "readOnly": false,
           "model": "inherit",
-          "tools": "(inherits all)"
+          "tools": "(inherits all)",
+          "hash": "53abb4c59d16"
         }
       },
       "readOnlyCount": 0,
       "writeCount": 1
     },
     "ce-riffrec-feedback-analysis": {
-      "sourceHash": "daa03d137c1d",
+      "sourceHash": "c7c3649703c1",
+      "outputHash": "c7c3649703c1",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "ce-sessions": {
-      "sourceHash": "313abdd1c73b",
+      "sourceHash": "a83bfe47f3d6",
+      "outputHash": "d2eeb2f483df",
       "closure": [
         "ce-session-historian"
       ],
@@ -578,21 +663,24 @@
         "ce-session-historian": {
           "readOnly": false,
           "model": "inherit",
-          "tools": "(inherits all)"
+          "tools": "(inherits all)",
+          "hash": "b088f2f1acd7"
         }
       },
       "readOnlyCount": 0,
       "writeCount": 1
     },
     "ce-simplify-code": {
-      "sourceHash": "2e04d0efc4d2",
+      "sourceHash": "a22305f18dd7",
+      "outputHash": "a22305f18dd7",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "ce-slack-research": {
-      "sourceHash": "84eebae89a99",
+      "sourceHash": "4092c687c930",
+      "outputHash": "6bf1cc4a6990",
       "closure": [
         "ce-slack-researcher"
       ],
@@ -600,35 +688,40 @@
         "ce-slack-researcher": {
           "readOnly": false,
           "model": "sonnet",
-          "tools": "(inherits all)"
+          "tools": "(inherits all)",
+          "hash": "c0c514e8ef50"
         }
       },
       "readOnlyCount": 0,
       "writeCount": 1
     },
     "ce-strategy": {
-      "sourceHash": "dea63e7b159c",
+      "sourceHash": "ae1633192dd2",
+      "outputHash": "ae1633192dd2",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "ce-test-browser": {
-      "sourceHash": "8a3e867354a7",
+      "sourceHash": "40464fb41924",
+      "outputHash": "40464fb41924",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "ce-test-xcode": {
-      "sourceHash": "b5ac317dab7f",
+      "sourceHash": "2a9cb7e4b5b8",
+      "outputHash": "2a9cb7e4b5b8",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "ce-work": {
-      "sourceHash": "16177450b773",
+      "sourceHash": "4e6e83b9c68d",
+      "outputHash": "0d7236761ad6",
       "closure": [
         "ce-figma-design-sync"
       ],
@@ -636,14 +729,16 @@
         "ce-figma-design-sync": {
           "readOnly": false,
           "model": "inherit",
-          "tools": "(inherits all)"
+          "tools": "(inherits all)",
+          "hash": "5920a846a98e"
         }
       },
       "readOnlyCount": 0,
       "writeCount": 1
     },
     "ce-work-beta": {
-      "sourceHash": "6ec1c016e263",
+      "sourceHash": "1e54c0c8c157",
+      "outputHash": "5b4df369f8cd",
       "closure": [
         "ce-figma-design-sync"
       ],
@@ -651,21 +746,24 @@
         "ce-figma-design-sync": {
           "readOnly": false,
           "model": "inherit",
-          "tools": "(inherits all)"
+          "tools": "(inherits all)",
+          "hash": "5920a846a98e"
         }
       },
       "readOnlyCount": 0,
       "writeCount": 1
     },
     "ce-worktree": {
-      "sourceHash": "986e398ee389",
+      "sourceHash": "16116968e1a3",
+      "outputHash": "16116968e1a3",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "lfg": {
-      "sourceHash": "0b72342c3610",
+      "sourceHash": "888baf319541",
+      "outputHash": "888baf319541",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,

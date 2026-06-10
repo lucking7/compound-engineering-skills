@@ -1,8 +1,9 @@
 name: sync-upstream
 
-# Follow the latest upstream `compound-engineering-v*` release. Deterministic risk-tiered auto-merge:
-#   content-only edits  -> commit straight to main
-#   structural change   -> open a PR for human review (never auto-merged)
+# Follow the latest upstream `compound-engineering-v*` release. Deterministic risk-tiered sync:
+#   content-only edits  -> auto-merge PR (validate gates run on it; merges without human action,
+#                          but leaves a reviewable PR + commit trail)
+#   structural change   -> PR held for human review (never auto-merged)
 # Pure regeneration (no patch/merge), no LLM, no extra secrets — uses the built-in GITHUB_TOKEN only.
 on:
   schedule:
@@ -29,12 +30,11 @@ jobs:
         with:
           node-version: '22'
 
-      # Regenerate skills/ + manifest from the latest upstream release, then classify the change.
-      # ce-transform exits non-zero on any structural gate failure -> this step fails -> nothing is committed.
+      # Regenerate skills/ + manifest from the latest upstream release (pinned to a commit SHA,
+      # stamped into the manifest), then classify the change.
+      # ce-transform exits non-zero on any gate failure -> this step fails -> nothing is committed.
       - name: Regenerate from upstream + classify
         id: sync
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: bash .deplugin/ce-sync.sh
 
       # Belt-and-suspenders: re-validate the freshly regenerated tree.
@@ -45,15 +45,34 @@ jobs:
         if: steps.sync.outputs.decision == 'nochange'
         run: echo "Up to date with upstream — nothing to do."
 
-      # CONTENT-ONLY change -> auto-merge to main.
-      - name: Auto-merge content-only update to main
+      # CONTENT-ONLY change -> PR that merges automatically once checks pass.
+      # (Same zero-touch outcome as a direct push, but with an audit trail and the
+      # validate workflow actually running against the change first.)
+      - name: Open auto-merge PR for content-only update
+        id: content_pr
         if: steps.sync.outputs.decision == 'automerge'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: sync/upstream-content
+          base: main
+          commit-message: "chore(sync): content-only update from upstream — ${{ steps.sync.outputs.summary }}"
+          title: "sync: content-only upstream update (auto-merge)"
+          body: |
+            Automated upstream sync classified this change as **content-only** (closure sets identical,
+            no skill added/removed — skill or persona body text only), which auto-merges once the
+            validate checks pass. No human action needed; this PR exists for the audit trail.
+
+            **What changed:** ${{ steps.sync.outputs.summary }}
+          labels: upstream-sync
+          delete-branch: true
+
+      - name: Enable auto-merge on the content PR
+        if: steps.sync.outputs.decision == 'automerge' && steps.content_pr.outputs.pull-request-number
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add skills transform-manifest.json
-          git commit -m "chore(sync): content-only update from upstream — ${{ steps.sync.outputs.summary }}"
-          git push
+          gh pr merge --squash --auto "${{ steps.content_pr.outputs.pull-request-number }}" \
+            || echo "::warning::Could not enable auto-merge (enable 'Allow auto-merge' in repo settings); PR left open for manual merge."
 
       # STRUCTURAL change -> open / update a PR for human review (never auto-merged).
       - name: Open PR for structural change
@@ -70,8 +89,9 @@ jobs:
 
             **What changed:** ${{ steps.sync.outputs.summary }}
 
-            Review the diff under `skills/` and `transform-manifest.json`. The deterministic structural gate
-            (`.deplugin/ce-validate.mjs`) has already passed; this review is to catch *semantic* drift the gate
-            cannot see (e.g. a renamed/split persona, a new dispatch idiom the convention block doesn't cover).
+            Review the diff under `skills/` and `transform-manifest.json`. The deterministic gates
+            (`.deplugin/ce-validate.mjs`, reproducible build) have already passed; this review is to catch
+            *semantic* drift the gates cannot see (e.g. a renamed/split persona, a new dispatch idiom the
+            convention block doesn't cover).
           labels: upstream-sync
           delete-branch: true

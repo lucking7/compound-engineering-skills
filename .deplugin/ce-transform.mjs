@@ -7,27 +7,37 @@
 //   OUT_DIR        = where to emit skills-only output
 //   [skills]       = optional subset; default = all skills
 //
-// Per skill: copy skill dir -> compute agent closure by scanning for the 43 agent names ->
-//   embed each closure agent body into references/personas/<name>.md (with a prose constraint
-//   header generated from its frontmatter) -> inject ONE convention block at top of SKILL.md ->
-//   guarantee NO agents/ dir -> emit manifest. Then run the validation gate.
+// Env:
+//   CE_EXCLUDE          comma-separated skills to drop (default: .deplugin/ce-exclude.txt)
+//   CE_MANIFEST         manifest path (default: OUT/transform-manifest.json)
+//   CE_UPSTREAM_REPO / CE_UPSTREAM_TAG / CE_UPSTREAM_COMMIT
+//                       provenance stamped into the manifest (set by ce-sync.sh)
+//
+// Per skill: copy skill dir -> compute the TRANSITIVE agent closure (skill text, then
+//   fixpoint over the bodies of referenced agents) -> embed each closure agent into
+//   references/personas/<name>.md with a harness-neutral constraint header -> inject ONE
+//   harness-neutral convention block at top of SKILL.md -> guarantee NO agents/ dir ->
+//   record sourceHash (pre-embedding), outputHash (final tree) and per-persona content
+//   hashes in the manifest. Then run the validation gate.
 
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
-import crypto from 'node:crypto';
+import url from 'node:url';
+import { sha1, walkFiles, hashTree, parseFrontmatter, readDefaultExclude } from './ce-lib.mjs';
 
+const HERE = path.dirname(url.fileURLToPath(import.meta.url));
 const [, , SRC, OUT, ...only] = process.argv;
 if (!SRC || !OUT) { console.error('usage: node ce-transform.mjs <SRC_PLUGIN_DIR> <OUT_DIR> [skills...]'); process.exit(2); }
 
 const SKILLS_DIR = path.join(SRC, 'skills');
 const AGENTS_DIR = path.join(SRC, 'agents');
-
-// CE_EXCLUDE: comma-separated skills to drop (stable across upstream additions).
-// CE_MANIFEST: where to write the provenance manifest (default: OUT/transform-manifest.json).
-const EXCLUDE = (process.env.CE_EXCLUDE || '').split(',').map(s => s.trim()).filter(Boolean);
 const MANIFEST = process.env.CE_MANIFEST || path.join(OUT, 'transform-manifest.json');
 
 const CONVENTION_MARKER = '<!-- ce-deplugin:convention -->';
+// Harness-neutral by design: these skills serve multiple agent CLIs (Claude Code,
+// opencode, ...) whose subagent systems differ. The dispatch ladder degrades
+// gracefully: subagent tool if the harness has one, inline adoption otherwise.
+// Never make a single CLI's tool names the only path.
 const CONVENTION = `${CONVENTION_MARKER}
 ## Self-contained persona dispatch (no \`agents/\` directory)
 
@@ -35,46 +45,50 @@ This skill is self-contained: its specialist personas live under \`references/pe
 
 Whenever the steps below name a \`ce-*\` specialist — e.g. \`Task ce-<specialist>(args)\`, "dispatch \`ce-<specialist>\`", or a persona-catalog entry:
 1. Read \`references/personas/<name>.md\`.
-2. Launch a subagent via the Task/Agent tool, passing that file's **entire contents as the subagent's instructions**, then append the specific args/context the step gives.
-3. \`subagent_type\`: use **\`Explore\`** if the persona's "Operating constraints" line says read-only; otherwise **\`general-purpose\`**.
-4. Honor the persona's "Operating constraints" line in your instruction to the subagent (tool/model limits are NOT otherwise enforced once de-plugin-ified).
-Dispatch independent personas in parallel from the **main thread**; personas never spawn further subagents.
+2. **If your harness can launch subagents** (a Task/agent-dispatch tool or equivalent), launch one, passing that file's **entire contents as the subagent's instructions**, then append the specific args/context the step gives. When the persona's "Operating constraints" line says read-only, prefer a read-only/explore-type subagent if your harness offers one; otherwise use a general-purpose subagent.
+3. **If your harness cannot launch subagents**, apply the persona inline: adopt the persona file as your own instructions for that step, complete it, then return to this skill's flow.
+4. Honor the persona's "Operating constraints" line in either mode (tool/model limits are NOT otherwise enforced once de-plugin-ified).
+Dispatch independent personas in parallel when your harness supports it; personas never spawn further subagents.
 `;
 
-// ---- helpers ----
-async function listDir(d) { try { return await fs.readdir(d); } catch { return []; } }
-async function walk(dir, acc = []) {
-  for (const e of await fs.readdir(dir, { withFileTypes: true })) {
-    const p = path.join(dir, e.name);
-    if (e.isDirectory()) await walk(p, acc); else acc.push(p);
-  }
-  return acc;
-}
+async function listDir(d) { try { return (await fs.readdir(d)).sort(); } catch { return []; } }
 async function copyDir(src, dst) { await fs.cp(src, dst, { recursive: true }); }
-function sha1(s) { return crypto.createHash('sha1').update(s).digest('hex').slice(0, 12); }
 
-function parseFrontmatter(md) {
-  const m = md.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
-  if (!m) return { fm: {}, body: md };
-  const fm = {};
-  for (const line of m[1].split('\n')) {
-    const mm = line.match(/^([a-zA-Z_]+):\s*(.*)$/);
-    if (mm) fm[mm[1]] = mm[2].replace(/^["']|["']$/g, '').trim();
-  }
-  return { fm, body: m[2] };
-}
 function isReadOnly(toolsLine) {
   if (!toolsLine) return false;               // no tools => inherits ALL (incl Write/Task) => general-purpose
   return !/(Write|Edit|NotebookEdit|MultiEdit)/.test(toolsLine);
 }
 
+function personaHeader(name, fm, readOnly) {
+  const mode = readOnly
+    ? 'YES — prefer a read-only/explore-type subagent if your harness offers one (e.g. Claude Code `Explore`), else a general-purpose subagent with write tools forbidden'
+    : 'no — use a general-purpose subagent (or apply inline if your harness has no subagents)';
+  return (
+    `> **Operating constraints (de-plugin-ified persona \`${name}\`).** ` +
+    `Read-only: ${mode}. ` +
+    `Allowed tools: ${fm.tools || '(originally inherited all)'}. Model: ${fm.model || 'inherit'}. ` +
+    `Stay strictly within these limits; they are not enforced by the runtime once de-plugin-ified.\n\n`
+  );
+}
+
 async function main() {
+  const EXCLUDE = process.env.CE_EXCLUDE !== undefined
+    ? process.env.CE_EXCLUDE.split(',').map(s => s.trim()).filter(Boolean)
+    : await readDefaultExclude(HERE);
+
   const agentFiles = (await listDir(AGENTS_DIR)).filter(f => f.endsWith('.md'));
   const AGENT_NAMES = agentFiles.map(f => f.replace(/\.md$/, ''));
-  // longest-first so substring names don't shadow (none do here, but safe)
-  const sortedNames = [...AGENT_NAMES].sort((a, b) => b.length - a.length);
-  const agentCache = {};
-  for (const n of AGENT_NAMES) agentCache[n] = await fs.readFile(path.join(AGENTS_DIR, `${n}.md`), 'utf8');
+  const nameRe = {};
+  for (const n of AGENT_NAMES) nameRe[n] = new RegExp(`\\b${n}\\b`);
+
+  const agentRaw = {};    // full upstream file (identity / persona hash)
+  const agentParsed = {}; // { fm, body, errors }
+  const fmErrors = [];
+  for (const n of AGENT_NAMES) {
+    agentRaw[n] = await fs.readFile(path.join(AGENTS_DIR, `${n}.md`), 'utf8');
+    agentParsed[n] = parseFrontmatter(agentRaw[n]);
+    for (const e of agentParsed[n].errors) fmErrors.push(`agent ${n}: ${e}`);
+  }
 
   let skills = (await listDir(SKILLS_DIR)).filter(s => !s.startsWith('.'));
   if (only.length) skills = skills.filter(s => only.includes(s));
@@ -83,7 +97,15 @@ async function main() {
   await fs.rm(OUT, { recursive: true, force: true });
   await fs.mkdir(OUT, { recursive: true });
 
-  const manifest = { generatedFrom: SRC, agentNames: AGENT_NAMES, skills: {} };
+  const manifest = {
+    upstream: {
+      repo: process.env.CE_UPSTREAM_REPO || null,
+      tag: process.env.CE_UPSTREAM_TAG || null,
+      commit: process.env.CE_UPSTREAM_COMMIT || null,
+    },
+    agentNames: AGENT_NAMES,
+    skills: {},
+  };
   const gateErrors = [];
 
   for (const skill of skills) {
@@ -94,31 +116,46 @@ async function main() {
     // guarantee no agents/ dir leaked in
     await fs.rm(path.join(outSkill, 'agents'), { recursive: true, force: true });
 
-    // compute closure: scan every output file for agent names
-    const files = await walk(outSkill);
+    // sourceHash: the upstream skill tree, pre-embedding (sorted, path-aware)
+    const sourceHash = await hashTree(outSkill);
+
+    // TRANSITIVE closure: seed from all skill text, then fixpoint over the bodies
+    // of referenced agents (a persona that names another agent pulls it in too —
+    // otherwise the embedded persona would point at a file that does not exist).
+    const files = await walkFiles(outSkill);
     const blob = (await Promise.all(files.map(f => fs.readFile(f, 'utf8').catch(() => '')))).join('\n');
-    const closure = sortedNames.filter(n => new RegExp(`\\b${n}\\b`).test(blob));
+    const closure = new Set(AGENT_NAMES.filter(n => nameRe[n].test(blob)));
+    for (let grew = true; grew;) {
+      grew = false;
+      for (const n of [...closure]) {
+        for (const m of AGENT_NAMES) {
+          if (!closure.has(m) && nameRe[m].test(agentParsed[n].body)) { closure.add(m); grew = true; }
+        }
+      }
+    }
+    const closureList = [...closure].sort();
+
+    // gate: a closure agent with unparseable frontmatter must fail the build,
+    // not silently degrade its constraints
+    for (const n of closureList) {
+      for (const e of agentParsed[n].errors) gateErrors.push(`${skill}: closure agent ${n} has ${e}`);
+    }
 
     // embed personas
     const personasDir = path.join(outSkill, 'references', 'personas');
-    if (closure.length) await fs.mkdir(personasDir, { recursive: true });
+    if (closureList.length) await fs.mkdir(personasDir, { recursive: true });
     const personaInfo = {};
-    for (const n of closure) {
-      const { fm, body } = parseFrontmatter(agentCache[n]);
+    for (const n of closureList) {
+      const { fm, body } = agentParsed[n];
       const ro = isReadOnly(fm.tools);
-      personaInfo[n] = { readOnly: ro, model: fm.model || 'inherit', tools: fm.tools || '(inherits all)' };
-      const header =
-        `> **Operating constraints (de-plugin-ified persona \`${n}\`).** ` +
-        `Read-only: ${ro ? 'YES — dispatch as subagent_type: Explore' : 'no — dispatch as subagent_type: general-purpose'}. ` +
-        `Allowed tools: ${fm.tools || '(originally inherited all)'}. Model: ${fm.model || 'inherit'}. ` +
-        `Stay strictly within these limits; they are not enforced by the runtime once de-plugin-ified.\n\n`;
-      await fs.writeFile(path.join(personasDir, `${n}.md`), header + body);
+      personaInfo[n] = { readOnly: ro, model: fm.model || 'inherit', tools: fm.tools || '(inherits all)', hash: sha1(agentRaw[n]) };
+      await fs.writeFile(path.join(personasDir, `${n}.md`), personaHeader(n, fm, ro) + body);
     }
 
-    // inject convention block at top of SKILL.md (idempotent)
+    // inject convention block at top of SKILL.md (idempotent, only when needed)
     const skillMdPath = path.join(outSkill, 'SKILL.md');
     let md = await fs.readFile(skillMdPath, 'utf8');
-    if (!md.includes(CONVENTION_MARKER) && closure.length) {
+    if (!md.includes(CONVENTION_MARKER) && closureList.length) {
       const fmEnd = md.indexOf('\n---', 3);
       if (md.startsWith('---') && fmEnd !== -1) {
         const cut = fmEnd + 4; // after closing '---\n'
@@ -129,39 +166,38 @@ async function main() {
       await fs.writeFile(skillMdPath, md);
     }
 
-    // ---- validation gate (per skill) ----
-    if (closure.length && !md.includes(CONVENTION_MARKER)) gateErrors.push(`${skill}: convention block missing`);
-    for (const n of closure) {
+    // ---- validation gate (per skill, on the fresh output) ----
+    if (closureList.length && !md.includes(CONVENTION_MARKER)) gateErrors.push(`${skill}: convention block missing`);
+    for (const n of closureList) {
       try { await fs.access(path.join(personasDir, `${n}.md`)); }
       catch { gateErrors.push(`${skill}: missing persona file for ${n}`); }
     }
-    // orphan personas (persona present but name never appears in skill text)
-    for (const n of closure) {
-      if (!new RegExp(`\\b${n}\\b`).test(md + blob)) gateErrors.push(`${skill}: orphan persona ${n}`);
-    }
-    // no agents/ dir
     try { await fs.access(path.join(outSkill, 'agents')); gateErrors.push(`${skill}: agents/ dir present!`); } catch {}
+    try { await fs.access(skillMdPath); } catch { gateErrors.push(`${skill}: missing SKILL.md`); }
 
     manifest.skills[skill] = {
-      sourceHash: sha1(blob),
-      closure,
+      sourceHash,
+      outputHash: await hashTree(outSkill),
+      closure: closureList,
       personas: personaInfo,
-      readOnlyCount: closure.filter(n => personaInfo[n].readOnly).length,
-      writeCount: closure.filter(n => !personaInfo[n].readOnly).length,
+      readOnlyCount: closureList.filter(n => personaInfo[n].readOnly).length,
+      writeCount: closureList.filter(n => !personaInfo[n].readOnly).length,
     };
   }
 
   await fs.mkdir(path.dirname(MANIFEST), { recursive: true });
-  await fs.writeFile(MANIFEST, JSON.stringify(manifest, null, 2));
+  await fs.writeFile(MANIFEST, JSON.stringify(manifest, null, 2) + '\n');
 
   // report
   const lines = [];
   lines.push(`Transformed ${Object.keys(manifest.skills).length} skill(s) -> ${OUT}`);
   for (const [s, m] of Object.entries(manifest.skills)) {
-    lines.push(`  ${s}: closure=${m.closure.length} (readonly→Explore=${m.readOnlyCount}, write→general-purpose=${m.writeCount}) hash=${m.sourceHash}`);
+    lines.push(`  ${s}: closure=${m.closure.length} (readonly=${m.readOnlyCount}, write=${m.writeCount}) src=${m.sourceHash} out=${m.outputHash}`);
   }
   lines.push('');
-  lines.push(gateErrors.length ? `GATE FAIL (${gateErrors.length}):\n  - ${gateErrors.join('\n  - ')}` : 'GATE PASS ✅  (no agents/ dir, every dispatch name has a persona, no orphans, convention injected)');
+  lines.push(gateErrors.length
+    ? `GATE FAIL (${gateErrors.length}):\n  - ${gateErrors.join('\n  - ')}`
+    : 'GATE PASS ✅  (no agents/ dir, every closure agent embedded, convention injected, frontmatter parsed cleanly)');
   console.log(lines.join('\n'));
   process.exit(gateErrors.length ? 1 : 0);
 }
