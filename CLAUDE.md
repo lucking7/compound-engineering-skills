@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Language
+
+优先用中文回复用户（代码、commit message、生成的 skills 内容除外）。
+
 ## What this repository is
 
 Self-contained, plugin-free Claude Code skills, **mechanically generated** from the upstream
