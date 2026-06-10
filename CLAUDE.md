@@ -14,6 +14,12 @@ The upstream plugin's skills dispatch shared sub-agents registered in a plugin-l
 directory; the deterministic transform in `.deplugin/` rewrites each skill so its agent
 dependency-closure is embedded as persona files and no `agents/` directory exists anywhere.
 
+**Distribution is via `npx skills` (skills CLI), not scripts.** The repo is a pure data tree:
+users install with the skills CLI (or plain copy), so never add install/setup scripts or any
+user-facing executable as a management mechanism, and keep the `skills/<name>/SKILL.md` layout
+the CLI discovers. (`scripts/` inside individual skills are upstream run-time helpers invoked by
+the agent while using a skill — they are upstream content, not management tooling.)
+
 **Why plugin-free (the reason this repo exists):** these skills must serve multiple agent CLIs
 (Claude Code, opencode, …) whose agent/subagent systems differ. Registered agents are inherently
 CLI-specific; embedded persona files plus a dispatch convention are portable. Never reintroduce a
