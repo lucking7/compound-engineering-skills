@@ -14,6 +14,12 @@ The upstream plugin's skills dispatch shared sub-agents registered in a plugin-l
 directory; the deterministic transform in `.deplugin/` rewrites each skill so its agent
 dependency-closure is embedded as persona files and no `agents/` directory exists anywhere.
 
+**Why plugin-free (the reason this repo exists):** these skills must serve multiple agent CLIs
+(Claude Code, opencode, …) whose agent/subagent systems differ. Registered agents are inherently
+CLI-specific; embedded persona files plus a dispatch convention are portable. Never reintroduce a
+dependency on any CLI's agent registry, and keep transform-injected text harness-neutral
+(capability-based wording with graceful degradation), not Claude-Code-specific.
+
 **Critical rule: `skills/` and `transform-manifest.json` are build outputs — a pure function of
 upstream.** Do not hand-edit them. To change them, change the transform (`.deplugin/ce-transform.mjs`)
 and regenerate, or wait for upstream. Hand-edits will be overwritten by the next sync and can fail
