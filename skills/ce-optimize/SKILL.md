@@ -10,10 +10,10 @@ This skill is self-contained: its specialist personas live under `references/per
 
 Whenever the steps below name a `ce-*` specialist — e.g. `Task ce-<specialist>(args)`, "dispatch `ce-<specialist>`", or a persona-catalog entry:
 1. Read `references/personas/<name>.md`.
-2. Launch a subagent via the Task/Agent tool, passing that file's **entire contents as the subagent's instructions**, then append the specific args/context the step gives.
-3. `subagent_type`: use **`Explore`** if the persona's "Operating constraints" line says read-only; otherwise **`general-purpose`**.
-4. Honor the persona's "Operating constraints" line in your instruction to the subagent (tool/model limits are NOT otherwise enforced once de-plugin-ified).
-Dispatch independent personas in parallel from the **main thread**; personas never spawn further subagents.
+2. **If your harness can launch subagents** (a Task/agent-dispatch tool or equivalent), launch one, passing that file's **entire contents as the subagent's instructions**, then append the specific args/context the step gives. When the persona's "Operating constraints" line says read-only, prefer a read-only/explore-type subagent if your harness offers one; otherwise use a general-purpose subagent.
+3. **If your harness cannot launch subagents**, apply the persona inline: adopt the persona file as your own instructions for that step, complete it, then return to this skill's flow.
+4. Honor the persona's "Operating constraints" line in either mode (tool/model limits are NOT otherwise enforced once de-plugin-ified).
+Dispatch independent personas in parallel when your harness supports it; personas never spawn further subagents.
 
 
 

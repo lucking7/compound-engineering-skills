@@ -33,7 +33,14 @@ inherent cost of full self-containment.
 
 ## Use
 
-Copy the skills you want into your skills directory:
+Install with the skills CLI (works across agent CLIs — Claude Code, opencode, …):
+
+```bash
+npx skills add lucking7/compound-engineering-skills
+```
+
+Or plain copy — each skill is a self-contained directory (a `SKILL.md` plus `references/`),
+nothing to register and no install scripts:
 
 ```bash
 # all of them
@@ -42,8 +49,6 @@ cp -R skills/* ~/.agents/skills/        # or ~/.claude/skills/
 cp -R skills/ce-optimize ~/.agents/skills/
 ```
 
-Each skill is a normal Claude Code skill (a `SKILL.md` plus `references/`).
-
 ## How it's built / kept in sync
 
 Everything is a **pure function of upstream** — no hand-editing of the output.
@@ -51,10 +56,13 @@ Everything is a **pure function of upstream** — no hand-editing of the output.
 | File | Role |
 |------|------|
 | `.deplugin/ce-transform.mjs` | the transform: upstream plugin → self-contained skills (deterministic, no LLM) |
-| `.deplugin/ce-validate.mjs`  | structural gate on the committed `skills/` tree (CI, no upstream needed) |
+| `.deplugin/ce-validate.mjs`  | structural + integrity gate on the committed `skills/` tree (CI, no upstream needed) |
+| `.deplugin/ce-reproduce.mjs` | reproducible-build gate: rebuild from the pinned upstream commit, assert byte-identical |
 | `.deplugin/ce-classify.mjs`  | diffs old vs new manifest → `nochange` / `automerge` / `pr` |
 | `.deplugin/ce-sync.sh`       | regenerate from the latest upstream `compound-engineering-v*` release, then classify |
-| `transform-manifest.json`    | provenance: upstream tag + per-skill closure & content hash |
+| `.deplugin/ce-lib.mjs` / `ce-exclude.txt` | shared helpers / single-source skill exclude list |
+| `.deplugin/test/`            | fixture-based tests for the toolchain (run in CI) |
+| `transform-manifest.json`    | provenance: upstream repo+tag+**commit SHA**, per-skill closure, source/output/persona hashes |
 
 Regenerate locally:
 
@@ -65,14 +73,19 @@ bash .deplugin/ce-sync.sh        # clones latest upstream release, rebuilds skil
 ### Automatic upstream sync
 
 `.github/workflows/sync-upstream.yml` runs weekly (and on demand). It regenerates from
-the latest upstream release, runs the structural gate, then applies a **deterministic
-risk tier**:
+the latest upstream release (pinned to a commit SHA recorded in the manifest), runs the
+gates, then applies a **deterministic risk tier**:
 
-- **content-only** change (skill/persona body text only) → committed straight to `main`;
+- **content-only** change (skill or persona body text only; closure sets identical) →
+  an **auto-merge PR**: merges without human action once the validate checks pass, but
+  leaves a reviewable audit trail;
 - **structural** change (a skill added/removed, or an agent closure changed) → opened as
-  a **PR for human review** — never auto-merged, because the structural gate cannot see
+  a **PR for human review** — never auto-merged, because the gates cannot see
   *semantic* drift (a renamed/split persona, a new dispatch idiom).
 
 No LLM and no extra secrets are involved — only the built-in `GITHUB_TOKEN`.
 
-`.github/workflows/validate.yml` runs the structural gate on every push and PR.
+`.github/workflows/validate.yml` runs on every push and PR: the structural/integrity gate
+(which recomputes per-skill output hashes, so hand-edits of `skills/` fail CI), the
+toolchain tests, and the **reproducible-build gate** — it re-clones the pinned upstream
+commit, re-runs the transform, and asserts the committed tree is byte-identical.

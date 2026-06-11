@@ -1,6 +1,9 @@
 name: validate
 
-# Structural gate on the committed skills/ tree. No upstream, no LLM, no secrets.
+# Two gates on every push/PR:
+#   structural-gate    — de-plugin-ify invariants + output-hash integrity + toolchain tests (no network)
+#   reproducible-build — re-clone the upstream commit pinned in the manifest, re-run the transform,
+#                        assert the committed skills/ + manifest are byte-identical (needs network)
 on:
   push:
     branches: [main]
@@ -20,3 +23,15 @@ jobs:
           node-version: '22'
       - name: Validate de-plugin-ify invariants
         run: node .deplugin/ce-validate.mjs
+      - name: Toolchain tests (fixtures)
+        run: node .deplugin/test/run-tests.mjs
+
+  reproducible-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Rebuild from pinned upstream and assert byte-identical
+        run: node .deplugin/ce-reproduce.mjs

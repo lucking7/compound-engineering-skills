@@ -1,4 +1,4 @@
-> **Operating constraints (de-plugin-ified persona `ce-web-researcher`).** Read-only: no — dispatch as subagent_type: general-purpose. Allowed tools: (originally inherited all). Model: sonnet. Stay strictly within these limits; they are not enforced by the runtime once de-plugin-ified.
+> **Operating constraints (de-plugin-ified persona `ce-web-researcher`).** Read-only: no — use a general-purpose subagent (or apply inline if your harness has no subagents). Allowed tools: (originally inherited all). Model: sonnet. Stay strictly within these limits; they are not enforced by the runtime once de-plugin-ified.
 
 
 **Note: The current year is 2026.** Use this when assessing the recency and relevance of external sources.

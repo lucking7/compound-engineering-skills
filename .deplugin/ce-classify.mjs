@@ -2,8 +2,14 @@
 // ce-classify.mjs — deterministic risk tier for an upstream sync.
 // Compares the PREVIOUS (committed) manifest against the freshly-generated one and decides:
 //   nochange  — nothing changed
-//   automerge — ONLY persona/skill body text changed (closure sets identical, no skill add/remove) -> safe to push to main
-//   pr        — ANY structural signal (skill added/removed, an agent added/removed/renamed in any closure) -> open PR for human review
+//   automerge — ONLY content changed: skill body text, persona body text, or the emitted
+//               output (closure sets identical, no skill add/remove) -> safe to auto-merge
+//   pr        — ANY structural signal (skill added/removed, an agent added/removed/renamed
+//               in any closure) -> open PR for human review
+//
+// Content comparison covers sourceHash (upstream skill files), per-persona hashes
+// (upstream agent files — WITHOUT this, agent-body edits would classify as `nochange`
+// and be silently dropped by the sync), and outputHash (the emitted tree).
 //
 // Usage: node .deplugin/ce-classify.mjs <oldManifest.json> <newManifest.json>
 // Emits JSON to stdout and, if $GITHUB_OUTPUT is set, writes decision/summary for the workflow.
@@ -18,15 +24,21 @@ const old = await load(oldPath);
 const neu = await load(newPath);
 const oldS = old.skills || {}, newS = neu.skills || {};
 const eqSet = (a = [], b = []) => a.length === b.length && [...a].sort().join('|') === [...b].sort().join('|');
+// stable content signature; tolerates old-schema manifests missing the newer hash fields
+const contentSig = (s = {}) => JSON.stringify([
+  s.sourceHash ?? null,
+  s.outputHash ?? null,
+  Object.entries(s.personas || {}).map(([k, v]) => [k, v.hash ?? null]).sort(),
+]);
 
 const added = Object.keys(newS).filter(s => !oldS[s]);
 const removed = Object.keys(oldS).filter(s => !newS[s]);
 const closureChanged = [];   // structural
-const contentChanged = [];   // body-only
+const contentChanged = [];   // body-only (skill text, persona text, or emitted output)
 for (const s of Object.keys(newS)) {
   if (!oldS[s]) continue;
   if (!eqSet(oldS[s].closure, newS[s].closure)) closureChanged.push(s);
-  else if (oldS[s].sourceHash !== newS[s].sourceHash) contentChanged.push(s);
+  else if (contentSig(oldS[s]) !== contentSig(newS[s])) contentChanged.push(s);
 }
 
 const structural = added.length || removed.length || closureChanged.length;
