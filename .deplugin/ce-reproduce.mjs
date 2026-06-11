@@ -16,7 +16,7 @@ import path from 'node:path';
 import os from 'node:os';
 import url from 'node:url';
 import { spawnSync } from 'node:child_process';
-import { walkFiles } from './ce-lib.mjs';
+import { walkFiles, EXPECTED_UPSTREAM_REPO } from './ce-lib.mjs';
 
 const HERE = path.dirname(url.fileURLToPath(import.meta.url));
 const REPO = process.argv[2] || path.resolve(HERE, '..');
@@ -28,11 +28,19 @@ const run = (cmd, args, opts = {}) => spawnSync(cmd, args, { encoding: 'utf8', .
 const manifest = JSON.parse(await fs.readFile(MANIFEST, 'utf8'));
 const { repo, tag, commit } = manifest.upstream || {};
 if (!repo || !tag || !commit) fail('manifest.upstream is incomplete (repo/tag/commit) — regenerate via ce-sync.sh');
+// trust anchor: never reproduce from a repo the manifest merely *claims* — a forged manifest
+// pointing at a look-alike fork must fail here, not be laundered into a PASS.
+if (repo !== EXPECTED_UPSTREAM_REPO) fail(`manifest.upstream.repo is '${repo}' — expected '${EXPECTED_UPSTREAM_REPO}'; refusing to reproduce from an unexpected upstream`);
+// clone-URL override exists ONLY so the fixture tests can point at a local file:// repo;
+// an override is never silent in a real run
+const UPSTREAM_URL = process.env.CE_UPSTREAM_URL || `https://github.com/${repo}`;
+if (process.env.CE_UPSTREAM_URL) console.error(`NOTE: upstream clone URL overridden: CE_UPSTREAM_URL=${process.env.CE_UPSTREAM_URL}`);
+if (process.env.CE_EXPECTED_UPSTREAM_REPO) console.error(`NOTE: trust anchor overridden: CE_EXPECTED_UPSTREAM_REPO=${process.env.CE_EXPECTED_UPSTREAM_REPO}`);
 
 const work = await fs.mkdtemp(path.join(os.tmpdir(), 'ce-reproduce-'));
 try {
   // 1) clone the pinned upstream and verify the commit
-  const clone = run('git', ['clone', '--depth', '1', '--branch', tag, `https://github.com/${repo}`, path.join(work, 'up')]);
+  const clone = run('git', ['clone', '--depth', '1', '--branch', tag, UPSTREAM_URL, path.join(work, 'up')]);
   if (clone.status !== 0) fail(`clone of ${repo}@${tag} failed:\n${clone.stderr}`);
   const head = run('git', ['rev-parse', 'HEAD'], { cwd: path.join(work, 'up') }).stdout.trim();
   if (head !== commit) fail(`upstream tag ${tag} now points at ${head}, manifest pins ${commit} — tag moved?`);

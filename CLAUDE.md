@@ -110,9 +110,12 @@ Four upstream skills that only manage the plugin itself are excluded via
 `sync-upstream.yml` runs weekly (and on demand): regenerate (pinning the upstream commit SHA),
 re-validate, then act on the `ce-classify.mjs` decision:
 - **automerge** — only content changed: skill body, **persona body** (per-persona hashes — without
-  them, upstream agent edits would classify as `nochange` and be dropped), or emitted output, with
-  closure sets identical and no skill added/removed → opens an **auto-merge PR** that merges once
-  the validate checks pass (zero-touch, but auditable).
+  them, upstream agent edits would classify as `nochange` and be dropped), emitted output, or a
+  provenance-pin advance, with closure sets identical and no skill added/removed → opens a PR and
+  **merges it in the same workflow run** after the inline gates pass (zero-touch, but auditable).
+  PRs created with the built-in `GITHUB_TOKEN` cannot trigger `validate.yml`, so the inline gates
+  are the real check — do not switch this to `gh pr merge --auto` + required checks; it would
+  stall forever.
 - **pr** — any structural signal (skill added/removed, closure changed) → opens a PR for human
   review, never auto-merged, because the gates cannot see semantic drift.
 

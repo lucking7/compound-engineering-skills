@@ -41,14 +41,20 @@ for (const s of Object.keys(newS)) {
   else if (contentSig(oldS[s]) !== contentSig(newS[s])) contentChanged.push(s);
 }
 
+// provenance advance: an upstream release that leaves every skill byte-identical (e.g. it only
+// touched excluded skills or added an agent no skill references) must still move the pin —
+// otherwise the manifest's tag/commit go stale and the reproduce gate keeps proving an old release.
+const provChanged = JSON.stringify(old.upstream ?? null) !== JSON.stringify(neu.upstream ?? null);
+
 const structural = added.length || removed.length || closureChanged.length;
-const decision = structural ? 'pr' : (contentChanged.length ? 'automerge' : 'nochange');
+const decision = structural ? 'pr' : (contentChanged.length || provChanged ? 'automerge' : 'nochange');
 
 const reasons = [];
 if (added.length) reasons.push(`skills added: ${added.join(', ')}`);
 if (removed.length) reasons.push(`skills removed: ${removed.join(', ')}`);
 if (closureChanged.length) reasons.push(`agent-closure changed (agent add/remove/rename): ${closureChanged.join(', ')}`);
 if (contentChanged.length) reasons.push(`content-only edits: ${contentChanged.join(', ')}`);
+if (provChanged) reasons.push(`upstream pin: ${old.upstream?.tag ?? '(none)'} -> ${neu.upstream?.tag ?? '(none)'}`);
 if (!reasons.length) reasons.push('no changes');
 
 const out = { decision, added, removed, closureChanged, contentChanged, reasons };

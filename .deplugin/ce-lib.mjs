@@ -7,6 +7,13 @@ import crypto from 'node:crypto';
 
 export const sha1 = s => crypto.createHash('sha1').update(s).digest('hex').slice(0, 12);
 
+// The ONLY upstream this repo may be generated from. Both gates assert the manifest's
+// provenance against it, so a forged manifest cannot redirect the reproducible-build
+// (or a reviewer's trust) to a look-alike fork. Env override exists ONLY for the
+// fixture tests; CI runs without it and therefore enforces the constant.
+export const EXPECTED_UPSTREAM_REPO =
+  process.env.CE_EXPECTED_UPSTREAM_REPO || 'EveryInc/compound-engineering-plugin';
+
 export const eqSet = (a = [], b = []) =>
   a.length === b.length && [...a].sort().join('|') === [...b].sort().join('|');
 

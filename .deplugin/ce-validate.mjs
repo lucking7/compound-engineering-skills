@@ -18,7 +18,7 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import url from 'node:url';
-import { walkFiles, walkDirs, hashTree, eqSet } from './ce-lib.mjs';
+import { walkFiles, walkDirs, hashTree, eqSet, EXPECTED_UPSTREAM_REPO } from './ce-lib.mjs';
 
 const HERE = path.dirname(url.fileURLToPath(import.meta.url));
 const REPO = process.argv[2] || path.resolve(HERE, '..');
@@ -26,8 +26,21 @@ const SKILLS = path.join(REPO, 'skills');
 const MANIFEST = path.join(REPO, 'transform-manifest.json');
 const MARKER = '<!-- ce-deplugin:convention -->';
 
+// an override is never silent in a real run (fixture-test escape hatch only — never set in CI)
+if (process.env.CE_EXPECTED_UPSTREAM_REPO) {
+  console.error(`NOTE: trust anchor overridden: CE_EXPECTED_UPSTREAM_REPO=${process.env.CE_EXPECTED_UPSTREAM_REPO}`);
+}
+
 const errors = [];
 const manifest = JSON.parse(await fs.readFile(MANIFEST, 'utf8'));
+
+// 0) trust anchor: the provenance must name the one expected upstream. A manifest that
+//    points anywhere else (or nowhere) is treated as forged, not merely unprovenanced —
+//    otherwise redirecting `upstream.repo` to a fork would pass both gates.
+if ((manifest.upstream || {}).repo !== EXPECTED_UPSTREAM_REPO) {
+  errors.push(`manifest.upstream.repo is '${manifest.upstream?.repo ?? '(missing)'}' — expected '${EXPECTED_UPSTREAM_REPO}'`);
+}
+
 const agentNames = manifest.agentNames || [];   // full upstream agent universe
 const nameRe = {};
 for (const n of agentNames) nameRe[n] = new RegExp(`\\b${n}\\b`);
@@ -37,8 +50,16 @@ for (const d of await walkDirs(SKILLS)) {
   if (path.basename(d) === 'agents') errors.push(`agents/ dir present: ${path.relative(REPO, d)}`);
 }
 
-// 2) on-disk skills == manifest skills (both directions)
-const onDisk = (await fs.readdir(SKILLS, { withFileTypes: true })).filter(e => e.isDirectory()).map(e => e.name);
+// 2) on-disk skills == manifest skills (both directions); skills/ holds ONLY skill dirs —
+//    a stray file planted directly under skills/ belongs to no skill, so no outputHash covers it
+const skillEnts = await fs.readdir(SKILLS, { withFileTypes: true });
+for (const e of skillEnts) {
+  // dotfiles and *.tmp are gitignored local noise (.DS_Store, editor scratch), not tamper —
+  // flagging them would fail the LOCAL gate on files git considers nonexistent
+  if (e.name.startsWith('.') || e.name.endsWith('.tmp')) continue;
+  if (!e.isDirectory()) errors.push(`stray file directly under skills/: ${e.name} (skills/ holds only generated skill dirs)`);
+}
+const onDisk = skillEnts.filter(e => e.isDirectory()).map(e => e.name);
 for (const s of onDisk) if (!manifest.skills[s]) errors.push(`skill on disk but not in manifest: ${s}`);
 for (const s of Object.keys(manifest.skills)) if (!onDisk.includes(s)) errors.push(`skill in manifest but not on disk: ${s}`);
 
@@ -109,5 +130,5 @@ if (errors.length) {
   process.exit(1);
 }
 const up = manifest.upstream || {};
-console.log(`GATE PASS ✅  ${total} skills validated (no agents/ dir, persona<->closure parity, convention iff closure, no orphans/danglings incl. persona text, output hashes match)`
-  + (up.tag ? `  [upstream ${up.tag} @ ${String(up.commit).slice(0, 12)}]` : '  [warning: no upstream provenance in manifest]'));
+console.log(`GATE PASS ✅  ${total} skills validated (provenance anchored to ${EXPECTED_UPSTREAM_REPO}, no agents/ dir or stray files, persona<->closure parity, convention iff closure, no orphans/danglings incl. persona text, output hashes match)`
+  + (up.tag ? `  [upstream ${up.tag} @ ${String(up.commit).slice(0, 12)}]` : ''));

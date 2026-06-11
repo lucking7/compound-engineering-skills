@@ -1,8 +1,11 @@
 name: sync-upstream
 
 # Follow the latest upstream `compound-engineering-v*` release. Deterministic risk-tiered sync:
-#   content-only edits  -> auto-merge PR (validate gates run on it; merges without human action,
-#                          but leaves a reviewable PR + commit trail)
+#   content-only edits  -> PR merged by this workflow right after the INLINE gates pass
+#                          (transform gate + ce-validate below). NOTE: PRs created with the
+#                          built-in GITHUB_TOKEN can NOT trigger other workflows, so validate.yml
+#                          never runs on these PRs — the inline gates are the real check, and the
+#                          PR exists for the audit trail, not for PR checks.
 #   structural change   -> PR held for human review (never auto-merged)
 # Pure regeneration (no patch/merge), no LLM, no extra secrets — uses the built-in GITHUB_TOKEN only.
 on:
@@ -45,10 +48,12 @@ jobs:
         if: steps.sync.outputs.decision == 'nochange'
         run: echo "Up to date with upstream — nothing to do."
 
-      # CONTENT-ONLY change -> PR that merges automatically once checks pass.
-      # (Same zero-touch outcome as a direct push, but with an audit trail and the
-      # validate workflow actually running against the change first.)
-      - name: Open auto-merge PR for content-only update
+      # CONTENT-ONLY change -> PR merged immediately by this workflow.
+      # The real gating already happened INLINE above (transform gate + ce-validate); the PR
+      # exists purely for the audit trail. PR checks (validate.yml) can NOT run here: GitHub
+      # does not trigger workflows for events created with the built-in GITHUB_TOKEN, so
+      # waiting on them (e.g. `gh pr merge --auto` + required checks) would stall forever.
+      - name: Open PR for content-only update
         id: content_pr
         if: steps.sync.outputs.decision == 'automerge'
         uses: peter-evans/create-pull-request@v6
@@ -56,23 +61,27 @@ jobs:
           branch: sync/upstream-content
           base: main
           commit-message: "chore(sync): content-only update from upstream — ${{ steps.sync.outputs.summary }}"
-          title: "sync: content-only upstream update (auto-merge)"
+          title: "sync: content-only upstream update (merged by sync workflow)"
           body: |
             Automated upstream sync classified this change as **content-only** (closure sets identical,
-            no skill added/removed — skill or persona body text only), which auto-merges once the
-            validate checks pass. No human action needed; this PR exists for the audit trail.
+            no skill added/removed — skill/persona body text or provenance pin only). It was validated
+            by the **inline gates in the sync run** (transform gate + `ce-validate.mjs`) and is merged
+            by the workflow itself. This PR exists for the audit trail.
+
+            Note: `validate.yml` checks cannot run on PRs created with the workflow token; the
+            reproducible-build gate re-verifies the merged tree on every later PR.
 
             **What changed:** ${{ steps.sync.outputs.summary }}
           labels: upstream-sync
           delete-branch: true
 
-      - name: Enable auto-merge on the content PR
+      - name: Merge the content PR (inline gates already passed)
         if: steps.sync.outputs.decision == 'automerge' && steps.content_pr.outputs.pull-request-number
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh pr merge --squash --auto "${{ steps.content_pr.outputs.pull-request-number }}" \
-            || echo "::warning::Could not enable auto-merge (enable 'Allow auto-merge' in repo settings); PR left open for manual merge."
+          gh pr merge --squash "${{ steps.content_pr.outputs.pull-request-number }}" \
+            || echo "::warning::Merge failed (branch protection or conflict); PR left open for manual merge."
 
       # STRUCTURAL change -> open / update a PR for human review (never auto-merged).
       - name: Open PR for structural change
@@ -90,8 +99,9 @@ jobs:
             **What changed:** ${{ steps.sync.outputs.summary }}
 
             Review the diff under `skills/` and `transform-manifest.json`. The deterministic gates
-            (`.deplugin/ce-validate.mjs`, reproducible build) have already passed; this review is to catch
-            *semantic* drift the gates cannot see (e.g. a renamed/split persona, a new dispatch idiom the
-            convention block doesn't cover).
+            (transform gate + `.deplugin/ce-validate.mjs`) already passed inside the sync run — note
+            that `validate.yml` checks cannot run on PRs created with the workflow token. This review
+            is to catch *semantic* drift the gates cannot see (e.g. a renamed/split persona, a new
+            dispatch idiom the convention block doesn't cover).
           labels: upstream-sync
           delete-branch: true

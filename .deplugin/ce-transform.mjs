@@ -83,11 +83,11 @@ async function main() {
 
   const agentRaw = {};    // full upstream file (identity / persona hash)
   const agentParsed = {}; // { fm, body, errors }
-  const fmErrors = [];
+  const fmErrors = [];    // [name, error] — folded into the gate below (unreferenced agents too)
   for (const n of AGENT_NAMES) {
     agentRaw[n] = await fs.readFile(path.join(AGENTS_DIR, `${n}.md`), 'utf8');
     agentParsed[n] = parseFrontmatter(agentRaw[n]);
-    for (const e of agentParsed[n].errors) fmErrors.push(`agent ${n}: ${e}`);
+    for (const e of agentParsed[n].errors) fmErrors.push([n, e]);
   }
 
   let skills = (await listDir(SKILLS_DIR)).filter(s => !s.startsWith('.'));
@@ -107,6 +107,7 @@ async function main() {
     skills: {},
   };
   const gateErrors = [];
+  const allClosures = new Set();
 
   for (const skill of skills) {
     const srcSkill = path.join(SKILLS_DIR, skill);
@@ -134,6 +135,7 @@ async function main() {
       }
     }
     const closureList = [...closure].sort();
+    for (const n of closureList) allClosures.add(n);
 
     // gate: a closure agent with unparseable frontmatter must fail the build,
     // not silently degrade its constraints
@@ -185,6 +187,12 @@ async function main() {
     };
   }
 
+  // a malformed agent OUTSIDE every closure must also fail loudly — today it ships nothing,
+  // but it would silently mis-embed the day a skill starts referencing it
+  for (const [n, e] of fmErrors) {
+    if (!allClosures.has(n)) gateErrors.push(`agent ${n} (unreferenced by any skill) has ${e}`);
+  }
+
   await fs.mkdir(path.dirname(MANIFEST), { recursive: true });
   await fs.writeFile(MANIFEST, JSON.stringify(manifest, null, 2) + '\n');
 
@@ -197,7 +205,7 @@ async function main() {
   lines.push('');
   lines.push(gateErrors.length
     ? `GATE FAIL (${gateErrors.length}):\n  - ${gateErrors.join('\n  - ')}`
-    : 'GATE PASS ✅  (no agents/ dir, every closure agent embedded, convention injected, frontmatter parsed cleanly)');
+    : 'GATE PASS ✅  (no agents/ dir, every closure agent embedded, convention injected, ALL agent frontmatter — referenced or not — parsed cleanly)');
   console.log(lines.join('\n'));
   process.exit(gateErrors.length ? 1 : 0);
 }
