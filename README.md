@@ -76,14 +76,16 @@ bash .deplugin/ce-sync.sh        # clones latest upstream release, rebuilds skil
 the latest upstream release (pinned to a commit SHA recorded in the manifest), runs the
 gates, then applies a **deterministic risk tier**:
 
-- **content-only** change (skill or persona body text only; closure sets identical) →
-  an **auto-merge PR**: merges without human action once the validate checks pass, but
-  leaves a reviewable audit trail;
+- **content-only** change (skill/persona body text or a provenance-pin advance; closure
+  sets identical) → a PR that the workflow **merges itself** right after the inline gates
+  (transform gate + `ce-validate.mjs`) pass — zero-touch, with a reviewable audit trail;
 - **structural** change (a skill added/removed, or an agent closure changed) → opened as
   a **PR for human review** — never auto-merged, because the gates cannot see
   *semantic* drift (a renamed/split persona, a new dispatch idiom).
 
-No LLM and no extra secrets are involved — only the built-in `GITHUB_TOKEN`.
+No LLM and no extra secrets are involved — only the built-in `GITHUB_TOKEN`. (That token's
+PRs cannot trigger `validate.yml`, which is why the content tier relies on the inline gates
+and merges directly instead of waiting on PR checks; no repo settings are required.)
 
 `.github/workflows/validate.yml` runs on every push and PR: the structural/integrity gate
 (which recomputes per-skill output hashes, so hand-edits of `skills/` fail CI), the
