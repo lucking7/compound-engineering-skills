@@ -1,8 +1,8 @@
 {
   "upstream": {
     "repo": "EveryInc/compound-engineering-plugin",
-    "tag": "compound-engineering-v3.11.2",
-    "commit": "966e32f5b5efec4830b347fff420482e05c90d4e"
+    "tag": "compound-engineering-v3.12.0",
+    "commit": "4719dc509fdc45656a830e3ed6060f674e206076"
   },
   "agentNames": [
     "ce-adversarial-document-reviewer",
@@ -67,8 +67,8 @@
       "writeCount": 0
     },
     "ce-brainstorm": {
-      "sourceHash": "b7c66b87617a",
-      "outputHash": "677017603a6f",
+      "sourceHash": "14a145efcf7c",
+      "outputHash": "e5f3a59d59c8",
       "closure": [
         "ce-slack-researcher"
       ],
@@ -420,8 +420,8 @@
       "writeCount": 0
     },
     "ce-ideate": {
-      "sourceHash": "5f89293d2d29",
-      "outputHash": "bebf6270a1a4",
+      "sourceHash": "5cb6b88ad2d6",
+      "outputHash": "0dac43cfe3b9",
       "closure": [
         "ce-issue-intelligence-analyst",
         "ce-learnings-researcher",
@@ -482,8 +482,8 @@
       "writeCount": 0
     },
     "ce-plan": {
-      "sourceHash": "1245a20aade9",
-      "outputHash": "58252b449b87",
+      "sourceHash": "90c3d9948eb0",
+      "outputHash": "562f3cc961c2",
       "closure": [
         "ce-architecture-strategist",
         "ce-best-practices-researcher",
@@ -720,8 +720,8 @@
       "writeCount": 0
     },
     "ce-work": {
-      "sourceHash": "4e6e83b9c68d",
-      "outputHash": "0d7236761ad6",
+      "sourceHash": "e9b83a9b964e",
+      "outputHash": "fa8604b9534e",
       "closure": [
         "ce-figma-design-sync"
       ],
@@ -737,8 +737,8 @@
       "writeCount": 1
     },
     "ce-work-beta": {
-      "sourceHash": "1e54c0c8c157",
-      "outputHash": "5b4df369f8cd",
+      "sourceHash": "d18df8e574e3",
+      "outputHash": "1cc03413c1a5",
       "closure": [
         "ce-figma-design-sync"
       ],
