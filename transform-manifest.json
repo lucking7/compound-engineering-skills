@@ -1,8 +1,8 @@
 {
   "upstream": {
     "repo": "EveryInc/compound-engineering-plugin",
-    "tag": "compound-engineering-v3.12.0",
-    "commit": "4719dc509fdc45656a830e3ed6060f674e206076"
+    "tag": "compound-engineering-v3.13.1",
+    "commit": "20f1ab613ad2a7df196f1b4ac6c12bbb2bd2c2f9"
   },
   "agentNames": [
     "ce-adversarial-document-reviewer",
@@ -67,8 +67,8 @@
       "writeCount": 0
     },
     "ce-brainstorm": {
-      "sourceHash": "14a145efcf7c",
-      "outputHash": "e5f3a59d59c8",
+      "sourceHash": "e1de59de79b3",
+      "outputHash": "3a093a17a210",
       "closure": [
         "ce-slack-researcher"
       ],
@@ -92,8 +92,8 @@
       "writeCount": 0
     },
     "ce-code-review": {
-      "sourceHash": "d8e092896da3",
-      "outputHash": "80e56bfa8385",
+      "sourceHash": "4ab3e16a3913",
+      "outputHash": "7b63c61b0002",
       "closure": [
         "ce-adversarial-reviewer",
         "ce-agent-native-reviewer",
@@ -230,8 +230,8 @@
       "writeCount": 0
     },
     "ce-compound": {
-      "sourceHash": "baabbe7e23e7",
-      "outputHash": "48398fe4ed66",
+      "sourceHash": "a452ceb38652",
+      "outputHash": "c6e39e626ded",
       "closure": [
         "ce-best-practices-researcher",
         "ce-code-simplicity-reviewer",
@@ -296,8 +296,8 @@
       "writeCount": 1
     },
     "ce-compound-refresh": {
-      "sourceHash": "484d9fd8426c",
-      "outputHash": "484d9fd8426c",
+      "sourceHash": "64be3d825062",
+      "outputHash": "64be3d825062",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
@@ -420,8 +420,8 @@
       "writeCount": 0
     },
     "ce-ideate": {
-      "sourceHash": "5cb6b88ad2d6",
-      "outputHash": "0dac43cfe3b9",
+      "sourceHash": "fd10e62d5150",
+      "outputHash": "1e56f9ae664c",
       "closure": [
         "ce-issue-intelligence-analyst",
         "ce-learnings-researcher",
@@ -482,8 +482,8 @@
       "writeCount": 0
     },
     "ce-plan": {
-      "sourceHash": "90c3d9948eb0",
-      "outputHash": "562f3cc961c2",
+      "sourceHash": "9a88193d175e",
+      "outputHash": "b0c8ee1c3bd7",
       "closure": [
         "ce-architecture-strategist",
         "ce-best-practices-researcher",
@@ -605,8 +605,8 @@
       "writeCount": 0
     },
     "ce-product-pulse": {
-      "sourceHash": "60aeccfa0592",
-      "outputHash": "60aeccfa0592",
+      "sourceHash": "d98e609dcbe0",
+      "outputHash": "d98e609dcbe0",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
@@ -621,8 +621,8 @@
       "writeCount": 0
     },
     "ce-proof": {
-      "sourceHash": "461afc939f6b",
-      "outputHash": "461afc939f6b",
+      "sourceHash": "52014cbf0486",
+      "outputHash": "52014cbf0486",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
@@ -720,8 +720,8 @@
       "writeCount": 0
     },
     "ce-work": {
-      "sourceHash": "e9b83a9b964e",
-      "outputHash": "fa8604b9534e",
+      "sourceHash": "2700cd073103",
+      "outputHash": "97cbdd1acee9",
       "closure": [
         "ce-figma-design-sync"
       ],
@@ -737,8 +737,8 @@
       "writeCount": 1
     },
     "ce-work-beta": {
-      "sourceHash": "d18df8e574e3",
-      "outputHash": "1cc03413c1a5",
+      "sourceHash": "44437ca28ee7",
+      "outputHash": "de789b2f2d5e",
       "closure": [
         "ce-figma-design-sync"
       ],
@@ -754,16 +754,16 @@
       "writeCount": 1
     },
     "ce-worktree": {
-      "sourceHash": "16116968e1a3",
-      "outputHash": "16116968e1a3",
+      "sourceHash": "e2eecfb5245b",
+      "outputHash": "e2eecfb5245b",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
       "writeCount": 0
     },
     "lfg": {
-      "sourceHash": "888baf319541",
-      "outputHash": "888baf319541",
+      "sourceHash": "007b66eada6b",
+      "outputHash": "007b66eada6b",
       "closure": [],
       "personas": {},
       "readOnlyCount": 0,
